@@ -3,6 +3,7 @@ import sys
 import random
 
 
+
 def laser_update(laser_list, speed=300):
     for rect in laser_list:
         rect.y -= round(speed *dt)
@@ -28,10 +29,12 @@ def laser_timer(can_shoot, duration=500):
 
 
 def meteor_update(meteor_list, speed=250):
-    for rec in meteor_list:
-        rec.y += round(speed * dt)
+    for rec, direction in meteor_list:
+        
+        rec.center += direction * speed * dt
+        # rec.y += round(speed * dt)
         if rec.bottom > WINDOW_HEIGHT:
-            meteor_list.remove(rec)
+            meteor_list.remove((rec,direction))
 
 pygame.init()
 WINOW_WIDTH, WINDOW_HEIGHT = 1280, 720
@@ -95,8 +98,18 @@ while True:
             
             
         if event.type == meteor_timer:
-            meteor_rect = meteor_surf.get_rect(midbottom=(random.randint(0,WINOW_WIDTH), 0))
-            meteor_list.append(meteor_rect)    
+            # rando position
+            x_pos = random.randint(-100, WINOW_WIDTH + 100)
+            y_pos = random.randint(-100, -50)
+            meteor_rect = meteor_surf.get_rect(midbottom=(random.randint(0,WINOW_WIDTH), y_pos))
+            
+            #create a random direction
+            direction = pygame.math.Vector2(random.uniform(-0.5, 0.5),1)
+            
+            # creating rect
+            meteor_list.append((meteor_rect, direction))
+            
+                
             
     
     
@@ -139,7 +152,7 @@ while True:
         display_surface.blit(laser_surf, rect) 
     display_surface.blit(ship_surf, ship_rect)
     
-    for rec in meteor_list:
+    for rec, direction in meteor_list:
         display_surface.blit(meteor_surf, rec)
     
     # show the frame to the player / update display surface
