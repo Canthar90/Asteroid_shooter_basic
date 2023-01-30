@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 
 def laser_update(laser_list, speed=300):
@@ -25,6 +26,13 @@ def laser_timer(can_shoot, duration=500):
             
     return can_shoot
 
+
+def meteor_update(meteor_list, speed=250):
+    for rec in meteor_list:
+        rec.y += round(speed * dt)
+        if rec.bottom > WINDOW_HEIGHT:
+            meteor_list.remove(rec)
+
 pygame.init()
 WINOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 clock = pygame.time.Clock()
@@ -46,12 +54,21 @@ laser_list =[]
 background_surf = pygame.image.load("graphics\galaxy.jpg").convert_alpha()
 background_surf = pygame.transform.scale(background_surf, (WINOW_WIDTH, WINDOW_HEIGHT))
 
+# meteor object
+meteor_surf = pygame.image.load(r"graphics\asteroid.png").convert_alpha()
+meteor_surf = pygame.transform.scale(meteor_surf, (70,70))
+meteor_list = []
+
 # import text
 font =  pygame.font.Font("graphics\subatomic.tsoonami.ttf" ,50)
 
 # laser timer setup
 can_shoot = True
 shoot_time = None 
+
+# meteor timer
+meteor_timer = pygame.event.custom_type()
+pygame.time.set_timer(meteor_timer, 300)
 
 
 pygame.display.set_caption("Asteroid shooter V1")
@@ -76,9 +93,14 @@ while True:
             can_shoot = False
             shoot_time = pygame.time.get_ticks()
             
-        
+            
+        if event.type == meteor_timer:
+            meteor_rect = meteor_surf.get_rect(midbottom=(random.randint(0,WINOW_WIDTH), 0))
+            meteor_list.append(meteor_rect)    
             
     
+    
+        
     
     
     # mouse position
@@ -110,10 +132,15 @@ while True:
     display_score()
     laser_update(laser_list)
     can_shoot = laser_timer(can_shoot, 350)
+    
+    meteor_update(meteor_list)
    
     for rect in laser_list:
         display_surface.blit(laser_surf, rect) 
     display_surface.blit(ship_surf, ship_rect)
+    
+    for rec in meteor_list:
+        display_surface.blit(meteor_surf, rec)
     
     # show the frame to the player / update display surface
     pygame.display.update()
