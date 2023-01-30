@@ -75,6 +75,15 @@ pygame.time.set_timer(meteor_timer, 300)
 
 
 pygame.display.set_caption("Asteroid shooter V1")
+
+#import sound
+laser_sound = pygame.mixer.Sound(r'sounds\blaster-2-81267.mp3')
+laser_sound.set_volume(0.3)
+explosion_sound = pygame.mixer.Sound(r"sounds\blast-37988.mp3")
+backgorund_music = pygame.mixer.Sound(r"sounds\nostro5-73932.mp3")
+backgorund_music.set_volume(0.7)
+backgorund_music.play(-1)
+
 while True:
     
     # framerate limit
@@ -91,6 +100,9 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN and can_shoot:
             laser_rect = laser_surf.get_rect(midbottom=ship_rect.midtop)
             laser_list.append(laser_rect)
+            
+            # play laser sound
+            laser_sound.play()
             
             # timer
             can_shoot = False
@@ -165,10 +177,11 @@ while True:
     # laser meteor collisions
     for meteor_tuple in meteor_list:
         meteor_rect = meteor_tuple[0]
-        for laser_rect in laser_list:
+        for laser_rect in laser_list:   
             if laser_rect.colliderect(meteor_rect):
                 laser_list.remove(laser_rect)
                 meteor_list.remove(meteor_tuple)
+                explosion_sound.play()
             
     
     # show the frame to the player / update display surface
