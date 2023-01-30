@@ -155,5 +155,21 @@ while True:
     for rec, direction in meteor_list:
         display_surface.blit(meteor_surf, rec)
     
+    # meteor ship collisions
+    for meteor_tuple in meteor_list:
+        meteor_rect = meteor_tuple[0]
+        if ship_rect.colliderect(meteor_rect):
+            pygame.quit()
+            sys.exit()
+            
+    # laser meteor collisions
+    for meteor_tuple in meteor_list:
+        meteor_rect = meteor_tuple[0]
+        for laser_rect in laser_list:
+            if laser_rect.colliderect(meteor_rect):
+                laser_list.remove(laser_rect)
+                meteor_list.remove(meteor_tuple)
+            
+    
     # show the frame to the player / update display surface
     pygame.display.update()
